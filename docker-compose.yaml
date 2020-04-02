@@ -1,0 +1,63 @@
+version: '2.3'
+
+services:
+    nginx:
+        build: .docker/nginx
+        image: kleberlyra/fullcycle-nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        volumes:
+            - ./app:/var/www
+        ports:
+            - "8000:80"
+        networks:
+            - app-network
+        depends_on:
+            - app
+    
+    redis:
+        image: redis
+        expose:
+            - "6379"
+        networks:
+            - app-network
+    app:
+        build: .
+        image: kleberlyra/fullcycle-app
+        container_name: app
+        restart: always
+        tty: true
+        volumes:
+            - ./app:/var/www
+        networks:
+            - app-network
+        depends_on: 
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
+
+    
+    db:
+        image: mysql:5.7
+        container_name: db
+        restart: always
+        tty: true
+        environment: 
+            - MYSQL_DATABASE=laravel
+            - MYSQL_USER=root
+            - MYSQL_ROOT_PASSWORD=root
+        volumes:
+            - ./dbstore:/var/lib/mysql
+        networks: 
+            - app-network
+        healthcheck:
+            test: ["CMD-SHELL", 'mysql -u root -proot --database=laravel --execute="SELECT count(table_name) > 0 FROM information_schema.tables;" --skip-column-names -B']
+            interval: 10s
+            timeout: 10s
+            retries: 4
+
+networks:
+    app-network:
+        driver: bridge
