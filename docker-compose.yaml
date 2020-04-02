@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
     nginx:
-        build: .docker/nginx
+#        build: .docker/nginx
         image: kleberlyra/fullcycle-nginx
         container_name: nginx
         restart: always
@@ -23,7 +23,7 @@ services:
         networks:
             - app-network
     app:
-        build: .
+#        build: .
         image: kleberlyra/fullcycle-app
         container_name: app
         restart: always
