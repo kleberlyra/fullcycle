@@ -14,7 +14,7 @@ services:
         container_name: app
         restart: always
         tty: true
-        volumes_from:
+        volumes:
             - aplication:/var/www
         networks:
             - app-network
