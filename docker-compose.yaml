@@ -1,21 +1,7 @@
 version: '2.3'
 
 services:
-    nginx:
-#        build: .docker/nginx
-        image: kleberlyra/fullcycle-nginx
-        container_name: nginx
-        restart: always
-        tty: true
-        volumes:
-            - ./app:/var/www
-        ports:
-            - "8000:80"
-        networks:
-            - app-network
-        depends_on:
-            - app
-    
+
     redis:
         image: redis
         expose:
@@ -23,13 +9,13 @@ services:
         networks:
             - app-network
     app:
-#        build: .
+        #build: .
         image: kleberlyra/fullcycle-app
         container_name: app
         restart: always
         tty: true
-        volumes:
-            - ./app:/var/www
+        volumes_from:
+            - aplication:/var/www
         networks:
             - app-network
         depends_on: 
@@ -38,6 +24,20 @@ services:
             redis:
                 condition: service_started
 
+    nginx:
+        #build: .docker/nginx
+        image: kleberlyra/fullcycle-nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        volumes_from:
+            - app
+        ports:
+            - "8000:80"
+        networks:
+            - app-network
+        depends_on:
+            - app
     
     db:
         image: mysql:5.7
@@ -57,6 +57,8 @@ services:
             interval: 10s
             timeout: 10s
             retries: 4
+volumes:
+    aplication:
 
 networks:
     app-network:
