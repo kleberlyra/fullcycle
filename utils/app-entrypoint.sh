@@ -1,6 +1,6 @@
 #!/bin/sh
 
-composer install
+composer update
 
 chown -R www-data:www-data .
 
