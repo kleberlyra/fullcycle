@@ -1,4 +1,4 @@
-version: '2.3'
+version: '3'
 
 services:
 
@@ -8,30 +8,43 @@ services:
             - "6379"
         networks:
             - app-network
+
     app:
-        #build: .
+        build: .
         image: kleberlyra/fullcycle-app
         container_name: app
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 40s -template /opt/utils/env.tmpl:/var/www/.env /opt/utils/app-entrypoint.sh
         restart: always
         tty: true
         volumes:
-            - aplication:/var/www
+            - ./app:/var/www
+            - ./utils:/opt/utils:ro
         networks:
             - app-network
         depends_on: 
-            db:
-                condition: service_healthy
-            redis:
-                condition: service_started
+            - db
+            - redis
+        environment:
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=laravel
+            - DB_USERNAME=root
+            - DB_PASSWORD=root
+            - REDIS_HOST=redis
 
     nginx:
-        #build: .docker/nginx
+        build: .docker/nginx
         image: kleberlyra/fullcycle-nginx
         container_name: nginx
+        entrypoint: dockerize -wait tcp://app:9000 -template /opt/utils/nginx.conf.tmpl:/etc/nginx/conf.d/nginx.conf /opt/utils/nginx-entrypoint.sh
         restart: always
         tty: true
-        volumes_from:
-            - app
+        environment:
+            - PHPFPM_HOST=app
+            - PHPFPM_PORT=9000
+        volumes:
+            - ./app:/var/www
+            - ./utils:/opt/utils:ro
         ports:
             - "8000:80"
         networks:
@@ -45,21 +58,14 @@ services:
         container_name: db
         restart: always
         tty: true
-        environment: 
+        environment:
             - MYSQL_DATABASE=laravel
             - MYSQL_USER=root
             - MYSQL_ROOT_PASSWORD=root
         volumes:
             - ./dbstore:/var/lib/mysql
-        networks: 
+        networks:
             - app-network
-        healthcheck:
-            test: ["CMD-SHELL", 'mysql -u root -proot --database=laravel --execute="SELECT count(table_name) > 0 FROM information_schema.tables;" --skip-column-names -B']
-            interval: 10s
-            timeout: 10s
-            retries: 4
-volumes:
-    aplication:
 
 networks:
     app-network:
