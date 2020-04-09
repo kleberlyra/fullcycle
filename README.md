@@ -1,6 +1,4 @@
-#CODE EDUCATION
-
-##Curso Desenvolvimento de Aplicações Modernas e Escaláveis com Microsserviços
+#Curso Desenvolvimento de Aplicações Modernas e Escaláveis com Microsserviços
 
 ####Projetos Práticos
 
