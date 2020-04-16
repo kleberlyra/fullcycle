@@ -15,6 +15,10 @@ steps:
   - id: "Copiando .env"
     name: 'gcr.io/cloud-builders/docker'
     args: ['exec','-t','app','cp','.env.example','.env']
+
+  - id: "Configurando .env"
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['exec','-t','app','sed','-i','"s/REDIS_HOST=127.0.0.1/REDIS_HOST=redis/;s/DB_HOST=127.0.0.1/DB_HOST=mysql/;s/DB_PASSWORD=/DB_PASSWORD=root/"','.env']
   
   - id: "Rodando key generate"
     name: 'gcr.io/cloud-builders/docker'
