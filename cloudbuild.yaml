@@ -20,7 +20,7 @@ steps:
     name: 'gcr.io/cloud-builders/docker'
     args: ['exec','-t','app','php','/var/www/artisan','key:generate']
 
-  - id: "Rorando migrations"
+  - id: "Rorando migration"
     name: 'gcr.io/cloud-builders/docker'
     args: ['exec','-t','app','php','/var/www/artisan','migrate']
 
