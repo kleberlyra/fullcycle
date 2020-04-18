@@ -15,3 +15,7 @@ Repositório Docker Hub
 Repositório Docker Hub
 
 - [Imagem com aplicação GO](https://hub.docker.com/repository/docker/kleberlyra/codeeducation)
+
+3 Processo de CI
+
+Criado um pipeline de integração com o Google Cloud Build. A triger é acionada quando uma pull request é criada.
